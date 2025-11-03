@@ -74,3 +74,4 @@ C:\Users\yusuf\OneDrive\Masaüstü\10_aylik_kariyer_yolclugu\Asp.Net_Core_8_0_il
 C:\Users\yusuf\OneDrive\Masaüstü\10_aylik_kariyer_yolclugu\Asp.Net_Core_8_0_ile_SifirdanIleri_Seviye_Web_Gelistirme\IdentityApp\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Design.dll
 C:\Users\yusuf\OneDrive\Masaüstü\10_aylik_kariyer_yolclugu\Asp.Net_Core_8_0_ile_SifirdanIleri_Seviye_Web_Gelistirme\IdentityApp\bin\Debug\net7.0\Mono.TextTemplating.dll
 C:\Users\yusuf\OneDrive\Masaüstü\10_aylik_kariyer_yolclugu\Asp.Net_Core_8_0_ile_SifirdanIleri_Seviye_Web_Gelistirme\IdentityApp\bin\Debug\net7.0\System.CodeDom.dll
+C:\Users\yusuf\OneDrive\Masaüstü\10_aylik_kariyer_yolclugu\Asp.Net_Core_8_0_ile_SifirdanIleri_Seviye_Web_Gelistirme\IdentityApp\obj\Debug\net7.0\IdentityApp.sourcelink.json
