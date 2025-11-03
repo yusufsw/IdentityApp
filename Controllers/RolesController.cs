@@ -62,7 +62,7 @@ namespace IdentityApp.Controllers
             {
                 var role = await _roleManager.FindByIdAsync(model.Id);
 
-                if (model != null)
+                if (role != null)
                 {
                     role.Name = model.Name;
 
