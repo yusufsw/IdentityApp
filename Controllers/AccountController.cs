@@ -12,15 +12,18 @@ namespace IdentityApp.Controllers
         private RoleManager<AppRole> _roleManager;
 
         private SignInManager<AppUser> _signInManager;
+        private IEmailSender _emailSender;
         
         public AccountController(
             UserManager<AppUser> userManager,
             RoleManager<AppRole> roleManager,
-            SignInManager<AppUser> signInManager)
+            SignInManager<AppUser> signInManager,
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
+            _emailSender = emailSender;
         }
         public IActionResult Login()
         {
@@ -37,6 +40,12 @@ namespace IdentityApp.Controllers
                 if (user != null)
                 {
                     await _signInManager.SignOutAsync();
+
+                    if (!await _userManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError("", "Hesabinizi onaylaniyiniz.");
+                        return View(model);
+                    }
 
                     var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, true);
 
@@ -64,6 +73,65 @@ namespace IdentityApp.Controllers
                 }
             }
             return View(model);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new AppUser {
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    FullName = model.FullName
+                };
+
+                IdentityResult result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var url = Url.Action("ConfirmEmail", "Account", new { user.Id, token }); // bu url emaile gonderilecek
+
+                    // email 
+                    await _emailSender.SendEmailAsync(user.Email, "Hesap Onayi", $"Lutfen email hesabinizi onaylamak icin linke <a href='http://localhost:5133{url}'> tiklayiniz</a>");
+
+                    TempData["message"] = "Email hesabinizdaki onay mailine tiklayiniz";
+                    return RedirectToAction("Login", "Account");
+                }
+                foreach (IdentityError err in result.Errors)
+                {
+                    ModelState.AddModelError("", err.Description);
+                }
+            }
+            return View(model);
+        }
+        
+        public async Task<IActionResult> ConfirmEmail(string Id, string token)
+        {
+            if (Id == null || token == null)
+            {
+                TempData["message"] = "Gecersiz token bilgisi";
+                return View();
+            }
+
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user != null)
+            {
+                var result = await _userManager.ConfirmEmailAsync(user, token);
+
+                if (result.Succeeded)
+                {
+                    TempData["message"] = "Hesabiniz onaylandi";
+                    return RedirectToAction("Login", "Account");
+                }
+            }
+            TempData["message"] = "Kullanici bulunamadi";
+            return View();
         }
     }
 }
